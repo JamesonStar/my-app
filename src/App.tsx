@@ -3,17 +3,30 @@ import Navbar from "./pages/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Watchlist from "./pages/Watchlist";
+import Footer from "./pages/Footer"; // ✅ pastikan sudah ada file ini
+import MovieDetail from "src/pages/MovieDetail";
+
+
 
 function App() {
   return (
-    <>
+    <div className="flex flex-col min-h-screen bg-[#0b1220] text-white">
+      {/* Navbar di atas */}
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/watchlist" element={<Watchlist />} />
-      </Routes>
-    </>
+
+      {/* Area konten halaman */}
+      <div className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/watchlist" element={<Watchlist />} />
+          <Route path="/movie/:id" element={<MovieDetail />} /> {/* ← Tambahkan ini */}
+        </Routes>
+      </div>
+
+      {/* Footer di bawah */}
+      <Footer />
+    </div>
   );
 }
 
