@@ -6,6 +6,7 @@ import Home from "../src/pages/Home";
 import Login from "../src/pages/Login";
 import Watchlist from "../src/pages/Watchlist";
 import Search from "/src/pages/Search";
+import Register from "/src/pages/Register";
 import "./index.css";
 import MovieDetail from "../src/pages/MovieDetail"; // ✅ tambahkan
 
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
       { path: "/watchlist", element: <Watchlist /> },
       { path: "/Search", element: <Search /> },
       { path: "/movie/:id", element: <MovieDetail /> }, // ✅ tambahkan route ini
+      { path: "/Register", element: <Register /> },
     ],
   },
 ]);

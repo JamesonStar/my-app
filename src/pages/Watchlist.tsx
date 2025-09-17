@@ -1,81 +1,91 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+interface Movie {
+  _id: string;
+  tmdbId: number;
+  title: string;
+  poster?: string;
+  releaseDate: string;
+  rating: number;
+}
 
 export default function Watchlist() {
-  const navigate = useNavigate();
-  const [films, setFilms] = useState<any[]>([]);
-  const [error, setError] = useState("");
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const token = localStorage.getItem("token");
+
+  const TMDB_KEY = "YOUR_TMDB_API_KEY"; // 🔑 isi dari https://www.themoviedb.org/settings/api
+  const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (!token) {
-      navigate("/login");
+      console.error("⚠️ Tidak ada token, user belum login");
       return;
     }
 
-    const fetchWatchlist = async () => {
-      try {
-        // ambil judul dari backend
-        const res = await fetch("http://localhost:3001/watchlist", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) {
-          setError("Gagal mengambil data watchlist");
-          return;
-        }
-
-        const titles: string[] = await res.json();
-
-        // fetch data lengkap dari OMDb API
-        const filmsData = await Promise.all(
-          titles.map(async (title) => {
-            const omdbRes = await fetch(`https://www.omdbapi.com/?apikey=7ff896bb&t=${encodeURIComponent(title)}`);
-            return omdbRes.json();
+    axios
+      .get("http://localhost:3001/api/watchlist", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(async (res) => {
+        const enrichedMovies = await Promise.all(
+          res.data.map(async (m: Movie) => {
+            if (!m.poster && m.tmdbId) {
+              try {
+                const tmdbRes = await axios.get(
+                  `https://api.themoviedb.org/3/movie/${m.tmdbId}?api_key=${TMDB_KEY}&language=ja`
+                );
+                return {
+                  ...m,
+                  poster: tmdbRes.data.poster_path
+                    ? `${TMDB_IMG}${tmdbRes.data.poster_path}`
+                    : "",
+                };
+              } catch (e) {
+                console.error("Gagal fetch TMDB:", e);
+              }
+            }
+            return m;
           })
         );
-
-        setFilms(filmsData);
-      } catch (err) {
-        setError("Server / OMDb API gagal diakses");
-      }
-    };
-
-    fetchWatchlist();
-  }, [navigate]);
+        setMovies(enrichedMovies);
+      })
+      .catch((err) => console.error(err));
+  }, [token]);
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Watchlist</h1>
-      {error && <p className="text-red-400 mb-2">{error}</p>}
-      {films.length === 0 && !error ? (
-        <p>Belum ada film di watchlist.</p>
+      <h2 className="text-2xl font-bold mb-6 text-white">🎬 Watchlist Saya</h2>
+
+      {movies.length === 0 ? (
+        <p className="text-gray-400">Belum ada film di watchlist.</p>
       ) : (
-        <ul className="space-y-3">
-          {films.map((film, idx) => (
-            <li
-              key={idx}
-              className="flex items-center bg-gray-800 rounded-lg shadow overflow-hidden"
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          {movies.map((m) => (
+            <div
+              key={m._id}
+              className="bg-gray-800 rounded-lg shadow-md overflow-hidden hover:scale-105 transition-transform"
             >
               <img
                 src={
-                  film.Poster !== "N/A"
-                    ? film.Poster
-                    : "https://via.placeholder.com/80x120?text=No+Image"
+                  m.poster
+                    ? m.poster
+                    : "https://via.placeholder.com/300x450?text=No+Poster"
                 }
-                alt={film.Title}
-                className="w-20 h-28 object-cover"
+                alt={m.title}
+                className="w-full h-64 object-cover"
               />
-              <div className="p-3">
-                <h2 className="text-lg font-semibold text-white">{film.Title}</h2>
-                <p className="text-gray-400">{film.Year}</p>
-                <p className="text-sm text-gray-300 line-clamp-3">{film.Plot}</p>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-white truncate">
+                  {m.title}
+                </h3>
+                <p className="text-gray-400 text-sm">{m.releaseDate}</p>
+                <p className="text-yellow-400 mt-1">⭐ {m.rating}</p>
               </div>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
-
 }

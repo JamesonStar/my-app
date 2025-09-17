@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Watchlist from "./pages/Watchlist";
 import Footer from "./pages/Footer"; // ✅ pastikan sudah ada file ini
+import { AuthProvider } from "./context/AuthContext";  // 👈 import
 
 
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/watchlist" element={<Watchlist />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </div>
 

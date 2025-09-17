@@ -6,6 +6,8 @@ export default function MovieDetail() {
   const [movie, setMovie] = useState<any>(null);
   const [cast, setCast] = useState<any[]>([]);
   const apiKey = "7d1a78e436047fa83ef2f7d010d6bc94";
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+
 
   useEffect(() => {
     async function fetchMovie() {
@@ -45,9 +47,28 @@ export default function MovieDetail() {
           <p className="text-sm text-gray-400">
             Release date: {movie.release_date} | Rating: {movie.vote_average}
           </p>
-          <button className="mt-6 px-4 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-600">
+          <button
+            onClick={async () => {
+              await fetch("http://localhost:3001/api/watchlist", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
+                body: JSON.stringify({
+                  title: movie.title,
+                  poster: movie.poster_path,
+                  releaseDate: movie.release_date,
+                  rating: movie.vote_average,
+                }),
+              });
+              alert("Movie added to Watchlist!");
+            }}
+            className="mt-6 px-4 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-600"
+          >
             + Add to Watchlist
           </button>
+
         </div>
       </div>
 

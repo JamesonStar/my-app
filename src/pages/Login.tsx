@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from ".,/src/pages/Navbar"; // <-- IMPORT navbar
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -13,21 +12,24 @@ export default function Login() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:3001/login", {  // <-- GANTI ke port 5000
+      const res = await fetch("http://localhost:3001/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
 
+      const data = await res.json(); // ✅ cukup sekali
+
       if (!res.ok) {
-        const data = await res.json();
         setError(data.message || "Login gagal");
         return;
       }
 
-      const data = await res.json();
+      // ✅ Simpan token & user ke localStorage
       localStorage.setItem("token", data.token);
-      navigate("/watchlist");
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      navigate("/watchlist"); // ✅ langsung ke halaman watchlist
     } catch (err) {
       setError("Gagal terhubung ke server");
     }
@@ -36,9 +38,13 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-        <form onSubmit={handleLogin} className="bg-gray-800 p-6 rounded-xl shadow-xl w-80">
+        <form
+          onSubmit={handleLogin}
+          className="bg-gray-800 p-6 rounded-xl shadow-xl w-80"
+        >
           <h1 className="text-2xl font-bold mb-4">Login</h1>
           {error && <p className="text-red-400 mb-2">{error}</p>}
+
           <input
             type="text"
             placeholder="Username"
@@ -46,6 +52,7 @@ export default function Login() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
+
           <input
             type="password"
             placeholder="Password"
@@ -53,7 +60,11 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded">
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded"
+          >
             Login
           </button>
         </form>

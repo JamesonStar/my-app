@@ -16,6 +16,7 @@ export default function Navbar() {
       <div className="flex gap-6">
         <Link to="/" className="hover:text-blue-400">Home</Link>
         <Link to="/search" className="hover:text-blue-400">Search</Link>
+        <Link to="/register" className="hover:text-blue-400">Register</Link>
         {token ? (
           <>
             <Link to="/watchlist" className="hover:text-blue-400">Watchlist</Link>
