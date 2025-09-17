@@ -14,7 +14,7 @@ export default function Watchlist() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const token = localStorage.getItem("token");
 
-  const TMDB_KEY = "7d1a78e436047fa83ef2f7d010d6bc94"; // 🔑 isi dari https://www.themoviedb.org/settings/api
+  const TMDB_KEY = "7d1a78e436047fa83ef2f7d010d6bc94"; // ganti dg API key kamu
   const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
 
   useEffect(() => {
@@ -33,7 +33,13 @@ export default function Watchlist() {
             if (!m.poster && m.tmdbId) {
               try {
                 const tmdbRes = await axios.get(
-                  `https://api.themoviedb.org/3/movie/${m.tmdbId}?api_key=${TMDB_KEY}&language=ja`
+                  `https://api.themoviedb.org/3/movie/${m.tmdbId}`,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${TMDB_KEY}`,
+                      accept: "application/json",
+                    },
+                  }
                 );
                 return {
                   ...m,
