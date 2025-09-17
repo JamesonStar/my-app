@@ -14,7 +14,7 @@ export default function Watchlist() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const token = localStorage.getItem("token");
 
-  const TMDB_KEY = "YOUR_TMDB_API_KEY"; // 🔑 isi dari https://www.themoviedb.org/settings/api
+  const TMDB_KEY = "7d1a78e436047fa83ef2f7d010d6bc94"; // 🔑 isi dari https://www.themoviedb.org/settings/api
   const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
 
   useEffect(() => {
