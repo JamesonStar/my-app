@@ -5,7 +5,7 @@ interface Movie {
   _id: string;
   tmdbId: number;
   title: string;
-  poster?: string;
+  poster: string;       // sekarang selalu ada URL full
   releaseDate: string;
   rating: number;
 }
@@ -13,9 +13,6 @@ interface Movie {
 export default function Watchlist() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const token = localStorage.getItem("token");
-
-  const TMDB_KEY = "7d1a78e436047fa83ef2f7d010d6bc94"; // ganti dg API key kamu
-  const TMDB_IMG = "https://image.tmdb.org/t/p/w500";
 
   useEffect(() => {
     if (!token) {
@@ -27,34 +24,8 @@ export default function Watchlist() {
       .get("http://localhost:3001/api/watchlist", {
         headers: { Authorization: `Bearer ${token}` },
       })
-      .then(async (res) => {
-        const enrichedMovies = await Promise.all(
-          res.data.map(async (m: Movie) => {
-            if (!m.poster && m.tmdbId) {
-              try {
-                const tmdbRes = await axios.get(
-                  `https://api.themoviedb.org/3/movie/${m.tmdbId}`,
-                  {
-                    headers: {
-                      Authorization: `Bearer ${TMDB_KEY}`,
-                      accept: "application/json",
-                    },
-                  }
-                );
-                return {
-                  ...m,
-                  poster: tmdbRes.data.poster_path
-                    ? `${TMDB_IMG}${tmdbRes.data.poster_path}`
-                    : "",
-                };
-              } catch (e) {
-                console.error("Gagal fetch TMDB:", e);
-              }
-            }
-            return m;
-          })
-        );
-        setMovies(enrichedMovies);
+      .then((res) => {
+        setMovies(res.data);
       })
       .catch((err) => console.error(err));
   }, [token]);

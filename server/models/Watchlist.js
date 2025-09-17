@@ -1,7 +1,9 @@
+// server/models/Watchlist.js
 import mongoose from "mongoose";
 
 const watchlistSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  tmdbId: { type: Number, required: true },
   title: String,
   poster: String,
   releaseDate: String,

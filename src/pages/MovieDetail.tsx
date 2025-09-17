@@ -56,8 +56,9 @@ export default function MovieDetail() {
                   "Authorization": `Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify({
+                  tmdbId: movie.id, // <--- penting
                   title: movie.title,
-                  poster: movie.poster_path,
+                  poster: `https://image.tmdb.org/t/p/w500${movie.poster_path}`, // <--- simpan full URL langsung
                   releaseDate: movie.release_date,
                   rating: movie.vote_average,
                 }),
@@ -68,6 +69,7 @@ export default function MovieDetail() {
           >
             + Add to Watchlist
           </button>
+
 
         </div>
       </div>
