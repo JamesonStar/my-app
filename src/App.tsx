@@ -4,7 +4,6 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Watchlist from "./pages/Watchlist";
 import Footer from "./pages/Footer"; // ✅ pastikan sudah ada file ini
-import MovieDetail from "src/pages/MovieDetail";
 
 
 
@@ -20,7 +19,6 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/watchlist" element={<Watchlist />} />
-          <Route path="/movie/:id" element={<MovieDetail />} /> {/* ← Tambahkan ini */}
         </Routes>
       </div>
 

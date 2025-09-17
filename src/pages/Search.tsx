@@ -1,75 +1,73 @@
 import { useState } from "react";
-import Navbar from "./Navbar";
+import { useNavigate } from "react-router-dom";
 
 export default function Search() {
   const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const apiKey = "7d1a78e436047fa83ef2f7d010d6bc94";
 
-  const handleSearch = async () => {
-    if (!query) return;
-    setLoading(true);
+  async function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    if (!query.trim()) return;
 
-    try {
-      const res = await fetch(
-        `https://www.omdbapi.com/?apikey=7ff896bb&s=${encodeURIComponent(query)}`
-      );
-      const data = await res.json();
-      if (data.Search) {
-        setMovies(data.Search);
-      } else {
-        setMovies([]);
-      }
-    } catch (err) {
-      console.error(err);
-    }
+    const res = await fetch(
+      `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&language=en-US&query=${encodeURIComponent(
+        query
+      )}`
+    );
+    const data = await res.json();
+    setResults(data.results || []);
+  }
 
-    setLoading(false);
-  };
+  function goToDetail(id: number) {
+    navigate(`/movie/${id}`);
+  }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <div className="flex flex-col items-center p-6">
-        <h1 className="text-3xl font-bold mb-6">🔍 Search Movies</h1>
-        <div className="flex gap-2 mb-6">
-          <input
-            type="text"
-            placeholder="Search movie..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="px-4 py-2 rounded-lg text-black"
-          />
-          <button
-            onClick={handleSearch}
-            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg"
-          >
-            Search
-          </button>
-        </div>
+    <div className="max-w-5xl mx-auto mt-10 px-4">
+      {/* Form Search */}
+      <form onSubmit={handleSearch} className="flex gap-2 mb-8">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search movie..."
+          className="flex-grow px-4 py-2 rounded-lg bg-[#1e293b] text-white focus:outline-none"
+        />
+        <button
+          type="submit"
+          className="px-4 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-600"
+        >
+          Search
+        </button>
+      </form>
 
-        {loading && <p>Loading...</p>}
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-5xl">
-          {movies.map((movie) => (
+      {/* Hasil pencarian */}
+      {results.length > 0 ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+          {results.map((movie) => (
             <div
-              key={movie.imdbID}
-              className="bg-gray-800 p-4 rounded-xl shadow-lg"
+              key={movie.id}
+              onClick={() => goToDetail(movie.id)}
+              className="cursor-pointer hover:scale-105 transition"
             >
               <img
                 src={
-                  movie.Poster !== "N/A"
-                    ? movie.Poster
-                    : "https://via.placeholder.com/300x400"
+                  movie.poster_path
+                    ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
+                    : "https://via.placeholder.com/300x450?text=No+Image"
                 }
-                alt={movie.Title}
-                className="w-full h-64 object-cover rounded-lg mb-3"
+                alt={movie.title}
+                className="rounded-lg shadow-lg w-full"
               />
-              <h2 className="text-lg font-semibold">{movie.Title}</h2>
-              <p className="text-sm text-gray-400">{movie.Year}</p>
+              <p className="mt-2 text-sm text-center">{movie.title}</p>
             </div>
           ))}
         </div>
-      </div>
+      ) : (
+        <p className="text-center text-gray-400">No results found.</p>
+      )}
     </div>
   );
 }

@@ -7,6 +7,9 @@ import Login from "../src/pages/Login";
 import Watchlist from "../src/pages/Watchlist";
 import Search from "/src/pages/Search";
 import "./index.css";
+import MovieDetail from "../src/pages/MovieDetail"; // ✅ tambahkan
+
+
 
 const router = createBrowserRouter([
   {
@@ -17,6 +20,7 @@ const router = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/watchlist", element: <Watchlist /> },
       { path: "/Search", element: <Search /> },
+      { path: "/movie/:id", element: <MovieDetail /> }, // ✅ tambahkan route ini
     ],
   },
 ]);
